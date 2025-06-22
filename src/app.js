@@ -5,38 +5,25 @@ const app=express();
 
 
 //Handle Auth middleware for all GET POST,....requests GET,POST
-app.use("/admin",(req,res)=>{
+app.use("/admin",(req,res,next)=>{
+    console.log("Admin auth is checked");
     const token="xyz";
     const isAdminAuthorized=token==="xyz";
-    if(isAdminAuthorized){
-        res.send("Admin is Authorized");
+    if(!isAdminAuthorized){
+        res.status(401).send("Unauthorized request");
     }
     else{
-        res.status(401).send("Unauthorized request");
+       next();
     }
 });
 
 app.get("/admin/getAllData",(req,res)=>{
-    /*const token="xyz";
-    const isAdminAuthorized=token==="xyz";
-    if(isAdminAuthorized){
-        res.send("Admin is Authorized");
-    }
-    else{
-        res.status(401).send("Unauthorized request");
-    }*/
+    res.send("All Data Sent");
 });
 
 
 app.get("/admin/deleteUser",(req,res)=>{
-    const token="xyz";
-    const isAdminAuthorized=token==="xyz";
-    if(isAdminAuthorized){
-        res.send("Deleted a User");
-    }
-    else{
-        res.status(401).send("Unauthorized request");
-    }
+    res.send("Deleted a User");
 });
 
 app.listen(3000,()=>{
