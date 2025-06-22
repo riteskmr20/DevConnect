@@ -2,10 +2,18 @@ const express=require("express");
 
 const app=express();
 
-const {adminAuth}=require('./middlewares/auth')
+const {adminAuth,userAuth}=require('./middlewares/auth')
 
 //Handle Auth middleware for all GET POST,....requests GET,POST
 app.use("/admin",adminAuth);
+
+
+
+//get understand this userAuth clearly
+app.get("/user",userAuth,(req,res)=>{
+   res.send("User Data sent");
+});
+
 
 app.get("/admin/getAllData",(req,res)=>{
     res.send("All Data Sent");
