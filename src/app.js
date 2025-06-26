@@ -64,8 +64,8 @@ app.delete("/user",async(req,res)=>{
 });
 
 
-//update the user
-app.patch("/user",async(req,res)=>{
+//update the user by id
+/*app.patch("/user",async(req,res)=>{
     const userId=req.body.userId;
     const data=req.body;
     
@@ -80,6 +80,20 @@ app.patch("/user",async(req,res)=>{
   catch(err){
     res.status(400).send("No user found!!")
   }
+});*/
+
+
+//update the user by email id
+app.patch("/user",async(req,res)=>{
+   const emailId=req.body.userId;
+   const data=req.body;
+   console.log(emailId);
+   try{
+    const user=await User.findOneAndUpdate({email:emailId},data);
+    res.send("User Updated Successfully!!");
+   }catch(err){
+     res.status(400).send("No user found!!");
+   }
 });
 
 
