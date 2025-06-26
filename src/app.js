@@ -63,6 +63,26 @@ app.delete("/user",async(req,res)=>{
   }
 });
 
+
+//update the user
+app.patch("/user",async(req,res)=>{
+    const userId=req.body.userId;
+    const data=req.body;
+    
+  try{
+    const user=await User.findOneAndUpdate({_id:userId},data,{
+      returnDocument:"after",
+    });
+    
+    console.log(user);
+    res.send("User Updated Successfully!!");
+  }
+  catch(err){
+    res.status(400).send("No user found!!")
+  }
+});
+
+
 connectDb()
   .then(() => {
     console.log("Database connection established...");
