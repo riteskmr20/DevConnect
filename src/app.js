@@ -5,6 +5,7 @@ const User = require("./models/user");
 
 app.use(express.json());
 
+//signup api
 app.post("/signup", async (req, res) => {
 
  //creating a new user instance of the user model 
@@ -49,7 +50,18 @@ app.get("/feed",async(req,res)=>{
     }
 })
 
+//delete user by Id
+app.delete("/user",async(req,res)=>{
+   
+  const userId=req.body.userId;
+  try{
+    const user=await User.findByIdAndDelete(userId);
+    res.send("User deleted Successfully !!");
 
+  }catch(err){
+    res.status(400).send("No user found by this Id");
+  }
+});
 
 connectDb()
   .then(() => {

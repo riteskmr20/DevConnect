@@ -19,8 +19,6 @@ const userSchema=new mongoose.Schema({
     gender:{
         type:String
     }
-
-
 });
 
 const User=mongoose.model("User",userSchema);
