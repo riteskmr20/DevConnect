@@ -42,7 +42,7 @@ app.get("/user",async(req,res)=>{
 app.get("/feed",async(req,res)=>{
     try{
       const users=await User.find({});
-      res.send(users);
+      res.send(users); 
     }
     catch(err){
      res.status(400).send("No user is found" +err.message);
