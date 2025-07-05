@@ -2,22 +2,40 @@ const express = require("express");
 const connectDb = require("./config/database");
 const app = express();
 const User = require("./models/user");
+const {validateSignUpData}=require('./utils/validation');
+const bcrypt=require('bcrypt');
+
 
 app.use(express.json());
 
 //signup api
 app.post("/signup", async (req, res) => {
 
- //creating a new user instance of the user model 
-  console.log(req.body);
-  const user = new User(req.body);
+ try {
+  //validation check wheather the enter user data is correct or not
+  validateSignUpData(req);
 
-  
-  try {
+  const {firstName,lastName,emailId,gender,age,password}=req.body;
+  //Now encrypt the user password
+  const passwordHash=await bcrypt.hash(password,10);
+  console.log(passwordHash);
+
+ //creating a new user instance of the user model 
+ // console.log(req.body);
+
+   const user = new User({
+    firstName,
+    lastName,
+    emailId,
+    password:passwordHash,
+    gender,
+    age
+   });
+
     await user.save();
     res.send("User added succesfully!");
   } catch (err) {
-    res.send("Error while adding to the database:" + err.message);
+    res.status(400).send("ERROR:" + err.message);
   }
 });
 
@@ -68,10 +86,11 @@ app.delete("/user",async(req,res)=>{
 /*app.patch("/user",async(req,res)=>{
     const userId=req.body.userId;
     const data=req.body;
-    
+    console.log(userId);
   try{
     const user=await User.findOneAndUpdate({_id:userId},data,{
       returnDocument:"after",
+      runValidators:true,
     });
     
     console.log(user);
@@ -87,9 +106,11 @@ app.delete("/user",async(req,res)=>{
 app.patch("/user",async(req,res)=>{
    const emailId=req.body.userId;
    const data=req.body;
-   console.log(emailId);
    try{
-    const user=await User.findOneAndUpdate({email:emailId},data);
+    const user=await User.findOneAndUpdate({email:emailId},data,{
+      returnDocument:"after",
+      runValidators:true,
+    });
     res.send("User Updated Successfully!!");
    }catch(err){
      res.status(400).send("No user found!!");
