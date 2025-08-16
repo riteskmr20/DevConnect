@@ -4,9 +4,13 @@ const app = express();
 const User = require("./models/user");
 const {validateSignUpData}=require('./utils/validation');
 const bcrypt=require('bcrypt');
-
+const cookieParser=require("cookie-parser");
+const jwt=require("jsonwebtoken");
+const {userAuth}=require("./middlewares/auth");
 
 app.use(express.json());
+app.use(cookieParser());
+
 
 //signup api
 app.post("/signup", async (req, res) => {
@@ -32,6 +36,7 @@ app.post("/signup", async (req, res) => {
     age
    });
 
+
     await user.save();
     res.send("User added succesfully!");
   } catch (err) {
@@ -39,6 +44,60 @@ app.post("/signup", async (req, res) => {
   }
 });
 
+
+app.post("/login",async(req,res)=>{
+    try{
+      const {emailId,password}=req.body;
+      const user=await User.findOne({emailId:emailId});
+      if(!user){
+        throw new Error("Invalid Credentials");
+      }
+      const isPasswordValid=await bcrypt.compare(password,user.password);
+      if(isPasswordValid){
+         
+        //Create a jwt token
+        const token=await jwt.sign({_id:user._id},"Ritesh@12345",{
+          expiresIn:"1h",
+        });
+        console.log(token);
+        
+        //Add the token to cookie and send message the response back to the user
+        res.cookie("token",token);
+        res.send("Login successfull !!");
+      }
+      else{
+        throw new Error("Invalid Credentials");
+      }
+     
+    }catch(err){ 
+      res.status(400).send("ERROR:"+err.message);
+    }
+});
+
+
+app.get("/profile",userAuth,async(req,res)=>{
+
+  try{
+   
+     const user=req.user;
+  
+    res.send(user);
+  }catch(err){
+    res.status(400).send("ERROR :"+err.message);
+  }
+    
+});
+
+
+app.post("/sendConnectionRequest",userAuth,async(req,res)=>{
+     try{
+        const user=req.user;
+        console.log("Sending connection request");
+        res.send(user.firstName + " Sent the connection request!!");
+     }catch(err){
+       res.status(400).send("ERROR :"+err.message);
+     }
+})
 
 //get the email of an user
 app.get("/user",async(req,res)=>{
@@ -128,3 +187,5 @@ connectDb()
   .catch(() => {
     console.log("Database cannot be connected!!");
   });
+
+
