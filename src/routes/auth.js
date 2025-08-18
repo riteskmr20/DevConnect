@@ -28,7 +28,7 @@ authRouter.post("/signup", async (req, res) => {
     gender,
     age
    });
-   
+
     await user.save();
     res.send("User added succesfully!");
   } catch (err) {
@@ -66,6 +66,13 @@ authRouter.post("/login",async(req,res)=>{
     }
 });
 
+
+authRouter.post("/logout",async(req,res)=>{
+    res.cookie("token",null,{
+      expires:new Date(Date.now()),
+    });
+    res.send("Logout Successful!!");
+});
 
 
 module.exports=authRouter;
